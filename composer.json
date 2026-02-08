@@ -18,5 +18,8 @@
         "psr-4": {
             "Dev\\Smarty\\Tests\\": "tests/"
         }
+    },
+    "scripts": {
+        "test": "phpunit -c phpunit.xml"
     }
 }
