@@ -1,0 +1,26 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Dev\Smarty\Ast;
+
+final class UnaryExpressionNode extends ExpressionNode
+{
+    public function __construct(
+        SourceSpan $span,
+        public string $operator,
+        public ExpressionNode $expression,
+    ) {
+        parent::__construct('UnaryExpression', $span);
+    }
+
+    public function toArray(): array
+    {
+        return [
+            'kind' => $this->kind,
+            'span' => SpanArray::from($this->span),
+            'operator' => $this->operator,
+            'expression' => $this->expression->toArray(),
+        ];
+    }
+}

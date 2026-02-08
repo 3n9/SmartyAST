@@ -1,0 +1,22 @@
+{
+    "name": "dev/smarty-ast-parser",
+    "type": "library",
+    "description": "Smarty template AST parser with diagnostics and position tracking",
+    "license": "proprietary",
+    "require": {
+        "php": "^8.2"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^13"
+    },
+    "autoload": {
+        "psr-4": {
+            "Dev\\Smarty\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Dev\\Smarty\\Tests\\": "tests/"
+        }
+    }
+}
