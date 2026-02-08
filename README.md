@@ -177,7 +177,53 @@ $result = (new Dev\Smarty\SmartyAstParser())->parseFile('path/to/template.tpl', 
 Run test suite:
 
 ```bash
+composer test
+# or
 vendor/bin/phpunit -c phpunit.xml
 ```
 
-Current suite includes built-in tags, shorthand forms, else variants, comment annotation parsing, and recovery cases.
+Current suite includes built-in tags, shorthand forms, else variants, comment annotation parsing, interpolation cases, operator compatibility, assignment/array parsing, and recovery cases.
+
+## Expression Syntax Support
+
+The parser supports Smarty/PHP-like expression forms used in tags and print expressions:
+
+- variable/object/array access:
+  - `{$foo}`
+  - `{$foo[4]}`
+  - `{$foo.bar}`
+  - `{$foo.$bar}`
+  - `{$foo->bar()}`
+  - `{$object->method1($x)->method2($y)}`
+- assignment expressions:
+  - `{$foo=$bar+2}`
+  - `{$foo.bar=1}`
+  - `{$foo[]=1}`
+- arrays (including multiline):
+  - `{assign var="arr" value=[1,2,3]}`
+  - `{assign var="arr" value=['k'=>'v', 'b'=>'c']}`
+  - multiline values in `assign` and print assignments
+- string interpolation:
+  - double-quoted variable interpolation (`$foo`, `$foo_bar`)
+  - backtick interpolation (for complex embedded expressions)
+  - embedded `{...}` expressions inside double-quoted strings
+- modern operators:
+  - ternary: `a ? b : c`
+  - shorthand ternary (elvis): `a ?: c`
+  - null coalescing: `a ?? c`
+- comparison/operator aliases:
+  - `eq`, `ne`, `neq`, `gt`, `lt`, `gte`, `ge`, `lte`, `le`, `mod`
+- Smarty predicates:
+  - `is [not] div by`
+  - `is [not] even`
+  - `is [not] even by`
+  - `is [not] odd`
+  - `is [not] odd by`
+  - `is [not] in`
+
+## Config Shorthand
+
+Config shorthand is supported:
+
+- `{#foo#}`
+- `{$smarty.config.foo}` (equivalent)
