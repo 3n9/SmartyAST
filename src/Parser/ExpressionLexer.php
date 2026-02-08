@@ -29,6 +29,15 @@ final class ExpressionLexer
             $startLine = $line;
             $startColumn = $column;
 
+            $threeChar = $offset + 2 < $length ? $source[$offset] . $source[$offset + 1] . $source[$offset + 2] : '';
+            $threeCharOps = ['===', '!=='];
+            if (in_array($threeChar, $threeCharOps, true)) {
+                $offset += 3;
+                $column += 3;
+                $tokens[] = new ExpressionToken('operator', $threeChar, $this->span($baseOffset + $startOffset, $startLine, $startColumn, $baseOffset + $offset, $line, $column));
+                continue;
+            }
+
             if ($ch === '$') {
                 $offset++;
                 $column++;
@@ -99,11 +108,11 @@ final class ExpressionLexer
                 continue;
             }
 
-            $singleOps = ['+', '-', '*', '/', '%', '(', ')', '[', ']', '.', ',', '?', ':', '|', '=', '!', '>', '<'];
+            $singleOps = ['+', '-', '*', '/', '%', '(', ')', '[', ']', '{', '}', '.', ',', '?', ':', '|', '=', '!', '>', '<'];
             if (in_array($ch, $singleOps, true)) {
                 $offset++;
                 $column++;
-                $type = in_array($ch, ['(', ')', '[', ']', ',', ':'], true) ? 'punct' : 'operator';
+                $type = in_array($ch, ['(', ')', '[', ']', '{', '}', ',', ':'], true) ? 'punct' : 'operator';
                 $tokens[] = new ExpressionToken($type, $ch, $this->span($baseOffset + $startOffset, $startLine, $startColumn, $baseOffset + $offset, $line, $column));
                 continue;
             }

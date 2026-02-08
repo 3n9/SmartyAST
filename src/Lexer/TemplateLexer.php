@@ -73,7 +73,7 @@ final class TemplateLexer
                 continue;
             }
 
-            $endPos = $this->findTagEnd($source, $offset + strlen($ld), $rd);
+            $endPos = $this->findTagEnd($source, $offset + strlen($ld), $ld, $rd);
             if ($endPos === null) {
                 $raw = substr($source, $offset);
                 $span = $this->spanFromRaw($offset, $line, $column, $raw);
@@ -92,7 +92,10 @@ final class TemplateLexer
             $content = trim(substr($raw, strlen($ld), -strlen($rd)));
             $span = $this->spanFromRaw($offset, $line, $column, $raw);
 
-            if ($content !== '' && $content[0] === '$') {
+            if ($this->isConfigShorthand($content)) {
+                $name = substr($content, 1, -1);
+                $tokens[] = new TemplateToken('print', $raw, '$smarty.config.' . $name, $span);
+            } elseif ($this->isPrintExpression($content)) {
                 $tokens[] = new TemplateToken('print', $raw, $content, $span);
             } elseif (str_starts_with($content, '/')) {
                 $tokens[] = new TemplateToken('close_tag', $raw, trim(substr($content, 1)), $span);
@@ -113,11 +116,13 @@ final class TemplateLexer
         return new LexResult($tokens, $diagnostics);
     }
 
-    private function findTagEnd(string $source, int $offset, string $rd): ?int
+    private function findTagEnd(string $source, int $offset, string $ld, string $rd): ?int
     {
         $inSingle = false;
         $inDouble = false;
+        $nestedDepth = 0;
         $length = strlen($source);
+        $ldLength = strlen($ld);
         $rdLength = strlen($rd);
 
         for ($i = $offset; $i < $length; $i++) {
@@ -138,7 +143,18 @@ final class TemplateLexer
                 continue;
             }
 
+            if (!$inSingle && !$inDouble && substr($source, $i, $ldLength) === $ld) {
+                $nestedDepth++;
+                $i += $ldLength - 1;
+                continue;
+            }
+
             if (!$inSingle && !$inDouble && substr($source, $i, $rdLength) === $rd) {
+                if ($nestedDepth > 0) {
+                    $nestedDepth--;
+                    $i += $rdLength - 1;
+                    continue;
+                }
                 return $i;
             }
         }
@@ -170,5 +186,20 @@ final class TemplateLexer
         }
 
         return [$line, $column];
+    }
+
+    private function isConfigShorthand(string $content): bool
+    {
+        return preg_match('/^#[A-Za-z_][A-Za-z0-9_]*#$/', $content) === 1;
+    }
+
+    private function isPrintExpression(string $content): bool
+    {
+        if ($content === '') {
+            return false;
+        }
+
+        $first = $content[0];
+        return $first === '$' || $first === '"' || $first === "'";
     }
 }
