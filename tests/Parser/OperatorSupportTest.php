@@ -62,6 +62,11 @@ final class OperatorSupportTest extends TestCase
             ['\$a is not odd by \$b'],
             ['\$a is in \$b'],
             ['\$a is not in \$b'],
+            ['\$a && \$b'],
+            ['\$a || \$b'],
+            ['\$a and \$b'],
+            ['\$a or \$b'],
+            ['\$a !== \$b'],
         ];
     }
 }

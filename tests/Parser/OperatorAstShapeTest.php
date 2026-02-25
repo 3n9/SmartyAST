@@ -111,6 +111,8 @@ final class OperatorAstShapeTest extends TestCase
             ['$a lte $b', '<='],
             ['$a le $b', '<='],
             ['$a mod $b', '%'],
+            ['$a and $b', '&&'],
+            ['$a or $b', '||'],
         ];
     }
 

@@ -688,6 +688,8 @@ final class ExpressionParser
             'gte', 'ge' => '>=',
             'lte', 'le' => '<=',
             'mod' => '%',
+            'and' => '&&',
+            'or' => '||',
             default => $token->value,
         };
     }
