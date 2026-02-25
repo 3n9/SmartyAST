@@ -14,6 +14,11 @@ final class DocumentNode extends Node
         parent::__construct('Document', $span);
     }
 
+    public function children(): array
+    {
+        return $this->children;
+    }
+
     public function toArray(): array
     {
         return [

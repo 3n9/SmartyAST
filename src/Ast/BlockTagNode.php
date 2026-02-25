@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Dev\Smarty\Ast;
 
-final class BlockTagNode extends Node
+final class BlockTagNode extends Node implements TagLike
 {
     /** @param list<Node> $children
      *  @param list<ElseBranchNode> $elseBranches
@@ -17,6 +17,16 @@ final class BlockTagNode extends Node
         public ?SourceSpan $closeSpan,
     ) {
         parent::__construct('BlockTag', $span);
+    }
+
+    public function resolveTag(): TagNode
+    {
+        return $this->openTag;
+    }
+
+    public function children(): array
+    {
+        return array_merge($this->children, $this->elseBranches);
     }
 
     public function toArray(): array

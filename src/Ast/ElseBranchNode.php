@@ -16,6 +16,11 @@ final class ElseBranchNode extends Node
         parent::__construct('ElseBranch', $span);
     }
 
+    public function children(): array
+    {
+        return $this->children;
+    }
+
     public function toArray(): array
     {
         return [

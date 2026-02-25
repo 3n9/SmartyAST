@@ -15,6 +15,11 @@ final class CallExpressionNode extends ExpressionNode
         parent::__construct('CallExpression', $span);
     }
 
+    public function childExpressions(): array
+    {
+        return [$this->callee, ...$this->arguments];
+    }
+
     public function toArray(): array
     {
         return [

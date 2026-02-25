@@ -13,6 +13,14 @@ abstract class Node
     }
 
     /**
+     * @return list<Node>
+     */
+    public function children(): array
+    {
+        return [];
+    }
+
+    /**
      * @return array<string,mixed>
      */
     abstract public function toArray(): array;

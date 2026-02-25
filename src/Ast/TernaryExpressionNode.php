@@ -15,6 +15,11 @@ final class TernaryExpressionNode extends ExpressionNode
         parent::__construct('TernaryExpression', $span);
     }
 
+    public function childExpressions(): array
+    {
+        return [$this->condition, $this->ifTrue, $this->ifFalse];
+    }
+
     public function toArray(): array
     {
         return [

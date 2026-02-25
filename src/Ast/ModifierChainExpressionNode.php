@@ -15,6 +15,12 @@ final class ModifierChainExpressionNode extends ExpressionNode
         parent::__construct('ModifierChainExpression', $span);
     }
 
+    public function childExpressions(): array
+    {
+        $modifierArgs = array_merge(...array_map(static fn (ModifierNode $m) => $m->arguments, $this->modifiers));
+        return [$this->base, ...$modifierArgs];
+    }
+
     public function toArray(): array
     {
         return [

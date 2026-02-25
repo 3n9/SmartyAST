@@ -14,6 +14,11 @@ final class UnaryExpressionNode extends ExpressionNode
         parent::__construct('UnaryExpression', $span);
     }
 
+    public function childExpressions(): array
+    {
+        return [$this->expression];
+    }
+
     public function toArray(): array
     {
         return [

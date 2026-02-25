@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Dev\Smarty\Ast;
 
-final class TagNode extends Node
+final class TagNode extends Node implements TagLike
 {
     /** @param list<TagArgumentNode> $arguments */
     public function __construct(
@@ -15,6 +15,11 @@ final class TagNode extends Node
         public string $raw,
     ) {
         parent::__construct('Tag', $span);
+    }
+
+    public function resolveTag(): TagNode
+    {
+        return $this;
     }
 
     public function toArray(): array

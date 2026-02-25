@@ -15,6 +15,11 @@ final class PropertyFetchExpressionNode extends ExpressionNode
         parent::__construct('PropertyFetchExpression', $span);
     }
 
+    public function childExpressions(): array
+    {
+        return [$this->target];
+    }
+
     public function toArray(): array
     {
         return [

@@ -14,6 +14,11 @@ final class ArrayAccessExpressionNode extends ExpressionNode
         parent::__construct('ArrayAccessExpression', $span);
     }
 
+    public function childExpressions(): array
+    {
+        return [$this->target, $this->index];
+    }
+
     public function toArray(): array
     {
         return [

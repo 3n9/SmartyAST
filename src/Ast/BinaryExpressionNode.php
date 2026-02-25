@@ -15,6 +15,11 @@ final class BinaryExpressionNode extends ExpressionNode
         parent::__construct('BinaryExpression', $span);
     }
 
+    public function childExpressions(): array
+    {
+        return [$this->left, $this->right];
+    }
+
     public function toArray(): array
     {
         return [
