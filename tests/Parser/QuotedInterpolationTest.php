@@ -88,6 +88,12 @@ final class QuotedInterpolationTest extends TestCase
         $this->assertTrue($this->hasNodeOfType($arg->value, IdentifierExpressionNode::class));
     }
 
+    public function testSingleQuotedStringDoesNotInterpolateVariables(): void
+    {
+        $arg = $this->parseFuncVarArgument("{func var='subdir/\$tpl_name.tpl'}");
+        $this->assertFalse($this->hasNodeOfType($arg->value, VariableExpressionNode::class));
+    }
+
     public function testEmbeddedIfBlockInQuotesSeesConditionVariable(): void
     {
         $arg = $this->parseFuncVarArgument('{func var="variable foo is {if !$foo}not {/if} defined"}');
