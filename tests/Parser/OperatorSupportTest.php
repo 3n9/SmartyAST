@@ -67,6 +67,8 @@ final class OperatorSupportTest extends TestCase
             ['\$a and \$b'],
             ['\$a or \$b'],
             ['\$a !== \$b'],
+            ['\$a matches \$b'],
+            ['(\$a < 1) or (\$b && (\$c is not in \$d))'],
         ];
     }
 }

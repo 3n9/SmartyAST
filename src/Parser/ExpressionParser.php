@@ -149,6 +149,11 @@ final class ExpressionParser
                 }
             }
 
+            if ($token->type === 'identifier' && strtolower($token->value) === 'matches') {
+                $left = $this->parseMatchesExpression($left);
+                continue;
+            }
+
             if ($token->type === 'operator' && $token->value === '?') {
                 $this->consume();
                 // Support both full ternary (a ? b : c) and shorthand elvis (a ?: c).
@@ -786,5 +791,18 @@ final class ExpressionParser
 
         $this->diagnostics[] = new Diagnostic('EXPR015', sprintf('Unsupported "is" predicate: %s', $kind->value), Severity::Error, $kind->span, true);
         return $left;
+    }
+
+    private function parseMatchesExpression(ExpressionNode $left): ExpressionNode
+    {
+        $matchesToken = $this->consume();
+        $pattern = $this->parseExpression(5);
+        $callee = new IdentifierExpressionNode($matchesToken->span, 'preg_match');
+
+        return new CallExpressionNode(
+            new SourceSpan($left->span->start, $pattern->span->end),
+            $callee,
+            [$pattern, $left],
+        );
     }
 }
