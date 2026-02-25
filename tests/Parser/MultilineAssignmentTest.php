@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Dev\Smarty\Tests\Parser;
+namespace SmartyAst\Tests\Parser;
 
-use Dev\Smarty\Ast\ArrayExpressionNode;
-use Dev\Smarty\Ast\BinaryExpressionNode;
-use Dev\Smarty\Ast\TagNode;
-use Dev\Smarty\Parser\SmartyParser;
+use SmartyAst\Ast\ArrayExpressionNode;
+use SmartyAst\Ast\BinaryExpressionNode;
+use SmartyAst\Ast\TagNode;
+use SmartyAst\Parser\SmartyParser;
 use PHPUnit\Framework\TestCase;
 
 final class MultilineAssignmentTest extends TestCase

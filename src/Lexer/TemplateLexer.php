@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Dev\Smarty\Lexer;
+namespace SmartyAst\Lexer;
 
-use Dev\Smarty\Ast\Position;
-use Dev\Smarty\Ast\SourceSpan;
-use Dev\Smarty\Diagnostics\Diagnostic;
-use Dev\Smarty\Diagnostics\Severity;
-use Dev\Smarty\ParseOptions;
+use SmartyAst\Ast\Position;
+use SmartyAst\Ast\SourceSpan;
+use SmartyAst\Diagnostics\Diagnostic;
+use SmartyAst\Diagnostics\Severity;
+use SmartyAst\ParseOptions;
 
 final class TemplateLexer
 {

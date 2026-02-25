@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Dev\Smarty;
+namespace SmartyAst;
 
-use Dev\Smarty\Comments\CommentParserInterface;
-use Dev\Smarty\Comments\PhpDocTemplateAnnotationParser;
+use SmartyAst\Comments\CommentParserInterface;
+use SmartyAst\Comments\PhpDocTemplateAnnotationParser;
 
 final class ParseOptions
 {

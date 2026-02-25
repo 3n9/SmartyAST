@@ -1,5 +1,5 @@
 {
-    "name": "dev/smarty-ast-parser",
+    "name": "3n9/smarty-ast",
     "type": "library",
     "description": "Smarty template AST parser with diagnostics and position tracking",
     "license": "proprietary",
@@ -11,12 +11,12 @@
     },
     "autoload": {
         "psr-4": {
-            "Dev\\Smarty\\": "src/"
+            "SmartyAst\\": "src/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "Dev\\Smarty\\Tests\\": "tests/"
+            "SmartyAst\\Tests\\": "tests/"
         }
     },
     "scripts": {

@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Dev\Smarty\Lexer;
+namespace SmartyAst\Lexer;
 
-use Dev\Smarty\Ast\SourceSpan;
+use SmartyAst\Ast\SourceSpan;
 
 final class TemplateToken
 {

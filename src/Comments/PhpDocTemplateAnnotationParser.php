@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace Dev\Smarty\Comments;
+namespace SmartyAst\Comments;
 
-use Dev\Smarty\Ast\AnnotationNode;
-use Dev\Smarty\Ast\Position;
-use Dev\Smarty\Ast\SourceSpan;
+use SmartyAst\Ast\AnnotationNode;
+use SmartyAst\Ast\Position;
+use SmartyAst\Ast\SourceSpan;
 
 final class PhpDocTemplateAnnotationParser implements CommentParserInterface
 {
-    public function parse(\Dev\Smarty\Ast\CommentNode $comment, CommentParseContext $context): CommentParseResult
+    public function parse(\SmartyAst\Ast\CommentNode $comment, CommentParseContext $context): CommentParseResult
     {
         $text = trim($comment->text);
         if ($text === '') {

@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Dev\Smarty\Parser;
+namespace SmartyAst\Parser;
 
-use Dev\Smarty\Ast\Position;
-use Dev\Smarty\Ast\SourceSpan;
+use SmartyAst\Ast\Position;
+use SmartyAst\Ast\SourceSpan;
 
 final class ExpressionLexer
 {

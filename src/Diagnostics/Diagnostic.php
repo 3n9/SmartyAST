@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Dev\Smarty\Diagnostics;
+namespace SmartyAst\Diagnostics;
 
-use Dev\Smarty\Ast\SourceSpan;
+use SmartyAst\Ast\SourceSpan;
 
 final class Diagnostic
 {

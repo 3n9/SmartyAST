@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Dev\Smarty\Parser;
+namespace SmartyAst\Parser;
 
-use Dev\Smarty\Ast\ExpressionNode;
-use Dev\Smarty\Diagnostics\Diagnostic;
+use SmartyAst\Ast\ExpressionNode;
+use SmartyAst\Diagnostics\Diagnostic;
 
 final class ExpressionParseResult
 {

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Dev\Smarty\Diagnostics;
+namespace SmartyAst\Diagnostics;
 
 enum Severity: string
 {

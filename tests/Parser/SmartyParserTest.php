@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Dev\Smarty\Tests\Parser;
+namespace SmartyAst\Tests\Parser;
 
-use Dev\Smarty\Parser\SmartyParser;
+use SmartyAst\Parser\SmartyParser;
 use PHPUnit\Framework\TestCase;
 
 final class SmartyParserTest extends TestCase

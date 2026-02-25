@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Dev\Smarty\Ast;
+namespace SmartyAst\Ast;
 
 abstract class ExpressionNode extends Node
 {

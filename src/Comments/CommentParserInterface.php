@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Dev\Smarty\Comments;
+namespace SmartyAst\Comments;
 
-use Dev\Smarty\Ast\CommentNode;
+use SmartyAst\Ast\CommentNode;
 
 interface CommentParserInterface
 {

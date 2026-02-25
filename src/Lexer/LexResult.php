@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Dev\Smarty\Lexer;
+namespace SmartyAst\Lexer;
 
-use Dev\Smarty\Diagnostics\Diagnostic;
+use SmartyAst\Diagnostics\Diagnostic;
 
 final class LexResult
 {

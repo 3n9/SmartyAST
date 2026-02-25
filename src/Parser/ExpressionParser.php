@@ -2,25 +2,25 @@
 
 declare(strict_types=1);
 
-namespace Dev\Smarty\Parser;
+namespace SmartyAst\Parser;
 
-use Dev\Smarty\Ast\ArrayAccessExpressionNode;
-use Dev\Smarty\Ast\ArrayExpressionNode;
-use Dev\Smarty\Ast\BinaryExpressionNode;
-use Dev\Smarty\Ast\CallExpressionNode;
-use Dev\Smarty\Ast\ErrorExpressionNode;
-use Dev\Smarty\Ast\ExpressionNode;
-use Dev\Smarty\Ast\IdentifierExpressionNode;
-use Dev\Smarty\Ast\LiteralExpressionNode;
-use Dev\Smarty\Ast\ModifierChainExpressionNode;
-use Dev\Smarty\Ast\ModifierNode;
-use Dev\Smarty\Ast\PropertyFetchExpressionNode;
-use Dev\Smarty\Ast\SourceSpan;
-use Dev\Smarty\Ast\TernaryExpressionNode;
-use Dev\Smarty\Ast\UnaryExpressionNode;
-use Dev\Smarty\Ast\VariableExpressionNode;
-use Dev\Smarty\Diagnostics\Diagnostic;
-use Dev\Smarty\Diagnostics\Severity;
+use SmartyAst\Ast\ArrayAccessExpressionNode;
+use SmartyAst\Ast\ArrayExpressionNode;
+use SmartyAst\Ast\BinaryExpressionNode;
+use SmartyAst\Ast\CallExpressionNode;
+use SmartyAst\Ast\ErrorExpressionNode;
+use SmartyAst\Ast\ExpressionNode;
+use SmartyAst\Ast\IdentifierExpressionNode;
+use SmartyAst\Ast\LiteralExpressionNode;
+use SmartyAst\Ast\ModifierChainExpressionNode;
+use SmartyAst\Ast\ModifierNode;
+use SmartyAst\Ast\PropertyFetchExpressionNode;
+use SmartyAst\Ast\SourceSpan;
+use SmartyAst\Ast\TernaryExpressionNode;
+use SmartyAst\Ast\UnaryExpressionNode;
+use SmartyAst\Ast\VariableExpressionNode;
+use SmartyAst\Diagnostics\Diagnostic;
+use SmartyAst\Diagnostics\Severity;
 
 final class ExpressionParser
 {
@@ -381,7 +381,7 @@ final class ExpressionParser
         return new ModifierChainExpressionNode(new SourceSpan($base->span->start, $end), $base, $modifiers);
     }
 
-    private function parseArrayLike(\Dev\Smarty\Ast\Position $start): ExpressionNode
+    private function parseArrayLike(\SmartyAst\Ast\Position $start): ExpressionNode
     {
         $open = $this->consume();
         if ($open->value !== '(') {
@@ -406,7 +406,7 @@ final class ExpressionParser
         return new ArrayExpressionNode(new SourceSpan($start, $close->span->end), $items);
     }
 
-    private function parseBracketArray(\Dev\Smarty\Ast\Position $start): ExpressionNode
+    private function parseBracketArray(\SmartyAst\Ast\Position $start): ExpressionNode
     {
         $open = $this->consume();
         if ($open->value !== '[') {

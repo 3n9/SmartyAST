@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Dev\Smarty\Tests\Parser;
+namespace SmartyAst\Tests\Parser;
 
-use Dev\Smarty\Ast\BlockTagNode;
-use Dev\Smarty\Ast\Node;
-use Dev\Smarty\Ast\TagNode;
-use Dev\Smarty\Parser\SmartyParser;
+use SmartyAst\Ast\BlockTagNode;
+use SmartyAst\Ast\Node;
+use SmartyAst\Ast\TagNode;
+use SmartyAst\Parser\SmartyParser;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
@@ -180,7 +180,7 @@ final class BuiltinTagsTest extends TestCase
         return null;
     }
 
-    /** @param list<\Dev\Smarty\Diagnostics\Diagnostic> $diagnostics */
+    /** @param list<\SmartyAst\Diagnostics\Diagnostic> $diagnostics */
     private function assertNoErrorDiagnostics(array $diagnostics): void
     {
         $errors = array_values(array_filter($diagnostics, static fn ($diagnostic) => $diagnostic->severity->value === 'error'));

@@ -2,24 +2,24 @@
 
 declare(strict_types=1);
 
-namespace Dev\Smarty\Parser;
+namespace SmartyAst\Parser;
 
-use Dev\Smarty\Ast\BlockTagNode;
-use Dev\Smarty\Ast\CommentNode;
-use Dev\Smarty\Ast\DocumentNode;
-use Dev\Smarty\Ast\ElseBranchNode;
-use Dev\Smarty\Ast\ExpressionNode;
-use Dev\Smarty\Ast\Node;
-use Dev\Smarty\Ast\PrintNode;
-use Dev\Smarty\Ast\SourceSpan;
-use Dev\Smarty\Ast\TagArgumentNode;
-use Dev\Smarty\Ast\TagNode;
-use Dev\Smarty\Ast\TextNode;
-use Dev\Smarty\Comments\CommentParseContext;
-use Dev\Smarty\Diagnostics\Diagnostic;
-use Dev\Smarty\Diagnostics\Severity;
-use Dev\Smarty\Lexer\TemplateToken;
-use Dev\Smarty\ParseOptions;
+use SmartyAst\Ast\BlockTagNode;
+use SmartyAst\Ast\CommentNode;
+use SmartyAst\Ast\DocumentNode;
+use SmartyAst\Ast\ElseBranchNode;
+use SmartyAst\Ast\ExpressionNode;
+use SmartyAst\Ast\Node;
+use SmartyAst\Ast\PrintNode;
+use SmartyAst\Ast\SourceSpan;
+use SmartyAst\Ast\TagArgumentNode;
+use SmartyAst\Ast\TagNode;
+use SmartyAst\Ast\TextNode;
+use SmartyAst\Comments\CommentParseContext;
+use SmartyAst\Diagnostics\Diagnostic;
+use SmartyAst\Diagnostics\Severity;
+use SmartyAst\Lexer\TemplateToken;
+use SmartyAst\ParseOptions;
 
 final class TemplateParser
 {
@@ -107,8 +107,8 @@ final class TemplateParser
         }
 
         $span = $tokens !== [] ? new SourceSpan($tokens[0]->span->start, end($tokens)->span->end) : new SourceSpan(
-            new \Dev\Smarty\Ast\Position(0, 1, 1),
-            new \Dev\Smarty\Ast\Position(0, 1, 1),
+            new \SmartyAst\Ast\Position(0, 1, 1),
+            new \SmartyAst\Ast\Position(0, 1, 1),
         );
 
         return [new DocumentNode($span, $rootChildren), $this->diagnostics];
@@ -278,7 +278,7 @@ final class TemplateParser
     }
 
     /** @param list<Node> $children */
-    private function nodeEnd(array $children, SourceSpan $fallback): \Dev\Smarty\Ast\Position
+    private function nodeEnd(array $children, SourceSpan $fallback): \SmartyAst\Ast\Position
     {
         if ($children === []) {
             return $fallback->end;

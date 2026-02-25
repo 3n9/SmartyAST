@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Dev\Smarty\Comments;
+namespace SmartyAst\Comments;
 
-use Dev\Smarty\Ast\AnnotationNode;
-use Dev\Smarty\Diagnostics\Diagnostic;
+use SmartyAst\Ast\AnnotationNode;
+use SmartyAst\Diagnostics\Diagnostic;
 
 final class CommentParseResult
 {

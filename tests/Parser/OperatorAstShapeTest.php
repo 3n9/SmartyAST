@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace Dev\Smarty\Tests\Parser;
+namespace SmartyAst\Tests\Parser;
 
-use Dev\Smarty\Ast\BinaryExpressionNode;
-use Dev\Smarty\Ast\CallExpressionNode;
-use Dev\Smarty\Ast\IdentifierExpressionNode;
-use Dev\Smarty\Ast\LiteralExpressionNode;
-use Dev\Smarty\Ast\UnaryExpressionNode;
-use Dev\Smarty\Ast\VariableExpressionNode;
-use Dev\Smarty\Parser\SmartyParser;
+use SmartyAst\Ast\BinaryExpressionNode;
+use SmartyAst\Ast\CallExpressionNode;
+use SmartyAst\Ast\IdentifierExpressionNode;
+use SmartyAst\Ast\LiteralExpressionNode;
+use SmartyAst\Ast\UnaryExpressionNode;
+use SmartyAst\Ast\VariableExpressionNode;
+use SmartyAst\Parser\SmartyParser;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 

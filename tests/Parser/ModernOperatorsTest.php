@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Dev\Smarty\Tests\Parser;
+namespace SmartyAst\Tests\Parser;
 
-use Dev\Smarty\Ast\BinaryExpressionNode;
-use Dev\Smarty\Ast\TernaryExpressionNode;
-use Dev\Smarty\Parser\SmartyParser;
+use SmartyAst\Ast\BinaryExpressionNode;
+use SmartyAst\Ast\TernaryExpressionNode;
+use SmartyAst\Parser\SmartyParser;
 use PHPUnit\Framework\TestCase;
 
 final class ModernOperatorsTest extends TestCase

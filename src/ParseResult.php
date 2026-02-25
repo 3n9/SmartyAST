@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Dev\Smarty;
+namespace SmartyAst;
 
-use Dev\Smarty\Ast\DocumentNode;
-use Dev\Smarty\Diagnostics\Diagnostic;
+use SmartyAst\Ast\DocumentNode;
+use SmartyAst\Diagnostics\Diagnostic;
 
 final class ParseResult
 {

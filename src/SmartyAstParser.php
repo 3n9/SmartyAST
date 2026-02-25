@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Dev\Smarty;
+namespace SmartyAst;
 
-use Dev\Smarty\Parser\SmartyParser;
+use SmartyAst\Parser\SmartyParser;
 
 final class SmartyAstParser
 {

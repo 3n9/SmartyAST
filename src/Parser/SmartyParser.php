@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Dev\Smarty\Parser;
+namespace SmartyAst\Parser;
 
-use Dev\Smarty\Lexer\TemplateLexer;
-use Dev\Smarty\ParseOptions;
-use Dev\Smarty\ParseResult;
+use SmartyAst\Lexer\TemplateLexer;
+use SmartyAst\ParseOptions;
+use SmartyAst\ParseResult;
 
 final class SmartyParser
 {
