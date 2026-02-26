@@ -10,7 +10,7 @@ final class PropertyFetchExpressionNode extends ExpressionNode
         SourceSpan $span,
         public ExpressionNode $target,
         public string $property,
-        public bool $objectAccess,
+        public string $operator,
     ) {
         parent::__construct('PropertyFetchExpression', $span);
     }
@@ -27,7 +27,7 @@ final class PropertyFetchExpressionNode extends ExpressionNode
             'span' => SpanArray::from($this->span),
             'target' => $this->target->toArray(),
             'property' => $this->property,
-            'objectAccess' => $this->objectAccess,
+            'operator' => $this->operator,
         ];
     }
 }

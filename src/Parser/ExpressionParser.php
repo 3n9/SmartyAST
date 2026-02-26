@@ -55,6 +55,8 @@ final class ExpressionParser
         '+' => 5,
         '-' => 5,
         '.' => 5,
+        '<<' => 5,
+        '>>' => 5,
         '*' => 6,
         '/' => 6,
         '%' => 6,
@@ -314,10 +316,10 @@ final class ExpressionParser
             }
 
             if ($token->value === '.' || $token->value === '->') {
-                $objectAccess = $token->value === '->';
+                $operator = $token->value;
                 $this->consume();
 
-                if (!$objectAccess && $this->current()->value === '{') {
+                if ($operator === '.' && $this->current()->value === '{') {
                     $open = $this->consume();
                     $index = $this->parseExpression(0);
                     if ($this->current()->value === '}') {
@@ -339,7 +341,23 @@ final class ExpressionParser
                     new SourceSpan($left->span->start, $propertyToken->span->end),
                     $left,
                     ltrim($propertyToken->value, '$'),
-                    $objectAccess,
+                    $operator,
+                );
+                continue;
+            }
+
+            if ($token->value === '::') {
+                $this->consume();
+                $memberToken = $this->consume();
+                if (!in_array($memberToken->type, ['identifier', 'variable'], true)) {
+                    $this->diagnostics[] = new Diagnostic('EXPR004', 'Expected property name after access operator.', Severity::Error, $memberToken->span, true);
+                    return $left;
+                }
+                $left = new PropertyFetchExpressionNode(
+                    new SourceSpan($left->span->start, $memberToken->span->end),
+                    $left,
+                    ltrim($memberToken->value, '$'),
+                    '::',
                 );
                 continue;
             }

@@ -100,7 +100,7 @@ final class ExpressionLexer
             }
 
             $twoChar = $offset + 1 < $length ? $source[$offset] . $source[$offset + 1] : '';
-            $twoCharOps = ['==', '!=', '>=', '<=', '&&', '||', '->', '=>', '??'];
+            $twoCharOps = ['==', '!=', '>=', '<=', '&&', '||', '->', '=>', '??', '::', '>>', '<<'];
             if (in_array($twoChar, $twoCharOps, true)) {
                 $offset += 2;
                 $column += 2;
