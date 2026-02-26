@@ -12,6 +12,7 @@ use SmartyAst\Ast\ErrorExpressionNode;
 use SmartyAst\Ast\ExpressionNode;
 use SmartyAst\Ast\IdentifierExpressionNode;
 use SmartyAst\Ast\LiteralExpressionNode;
+use SmartyAst\Ast\NamedArgumentExpressionNode;
 use SmartyAst\Ast\ModifierChainExpressionNode;
 use SmartyAst\Ast\ModifierNode;
 use SmartyAst\Ast\PropertyFetchExpressionNode;
@@ -68,17 +69,19 @@ final class ExpressionParser
 
     /** @var list<Diagnostic> */
     private array $diagnostics = [];
+    private string $phpVersion = '8.1';
 
     public function __construct(
         private readonly ExpressionLexer $lexer = new ExpressionLexer(),
     ) {
     }
 
-    public function parse(string $source, SourceSpan $containerSpan): ExpressionParseResult
+    public function parse(string $source, SourceSpan $containerSpan, string $phpVersion = '8.1'): ExpressionParseResult
     {
         $this->tokens = $this->lexer->tokenize($source, $containerSpan->start->offset, $containerSpan->start->line, $containerSpan->start->column);
         $this->index = 0;
         $this->diagnostics = [];
+        $this->phpVersion = $phpVersion;
 
         $expression = $this->parseExpression(0);
         if ($this->current()->type !== 'eof') {
@@ -91,11 +94,12 @@ final class ExpressionParser
     /**
      * @return array{0:list<array{name:?string,value:ExpressionNode,span:SourceSpan}>,1:list<Diagnostic>}
      */
-    public function parseArguments(string $source, SourceSpan $containerSpan): array
+    public function parseArguments(string $source, SourceSpan $containerSpan, string $phpVersion = '8.1'): array
     {
         $this->tokens = $this->lexer->tokenize($source, $containerSpan->start->offset, $containerSpan->start->line, $containerSpan->start->column);
         $this->index = 0;
         $this->diagnostics = [];
+        $this->phpVersion = $phpVersion;
         $args = [];
 
         while ($this->current()->type !== 'eof') {
@@ -293,6 +297,19 @@ final class ExpressionParser
                         $spreadTok = $this->consume();
                         $operand = $this->parseExpression(0);
                         $args[] = new UnaryExpressionNode(new SourceSpan($spreadTok->span->start, $operand->span->end), '...', $operand);
+                    } elseif (
+                        version_compare($this->phpVersion, '8.0', '>=')
+                        && $this->current()->type === 'identifier'
+                        && ($this->tokens[$this->index + 1] ?? null)?->value === ':'
+                    ) {
+                        $nameTok = $this->consume();
+                        $colon = $this->consume();
+                        $value = $this->parseExpression(0);
+                        $args[] = new NamedArgumentExpressionNode(
+                            new SourceSpan($nameTok->span->start, $value->span->end),
+                            $nameTok->value,
+                            $value,
+                        );
                     } else {
                         $args[] = $this->parseExpression(0);
                     }

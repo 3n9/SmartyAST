@@ -64,17 +64,17 @@ final class TemplateParser
                     break;
 
                 case 'print':
-                    $expr = $exprParser->parse($token->content, $token->span);
+                    $expr = $exprParser->parse($token->content, $token->span, $options->phpVersion);
                     $this->diagnostics = array_merge($this->diagnostics, $expr->diagnostics);
                     $this->appendNode($stack, $rootChildren, new PrintNode($token->span, $expr->expression, $token->trimLeft, $token->trimRight));
                     break;
 
                 case 'tag':
-                    $tag = $this->parseTagNode($token, $exprParser);
+                    $tag = $this->parseTagNode($token, $exprParser, $options);
                     $name = strtolower($tag->name);
 
                     if ($this->isElseTag($name)) {
-                        $this->handleElse($stack, $tag, $name, $exprParser);
+                        $this->handleElse($stack, $tag, $name, $exprParser, $options);
                         break;
                     }
 
@@ -114,7 +114,7 @@ final class TemplateParser
         return [new DocumentNode($span, $rootChildren), $this->diagnostics];
     }
 
-    private function parseTagNode(TemplateToken $token, ExpressionParser $exprParser): TagNode
+    private function parseTagNode(TemplateToken $token, ExpressionParser $exprParser, ParseOptions $options): TagNode
     {
         $content = trim($token->content);
         if ($content === '') {
@@ -132,7 +132,7 @@ final class TemplateParser
         $isShorthand = false;
 
         if ($rest !== '') {
-            [$rawArgs, $argDiagnostics] = $exprParser->parseArguments($rest, $token->span);
+            [$rawArgs, $argDiagnostics] = $exprParser->parseArguments($rest, $token->span, $options->phpVersion);
             $this->diagnostics = array_merge($this->diagnostics, $argDiagnostics);
 
             foreach ($rawArgs as $arg) {
@@ -147,7 +147,7 @@ final class TemplateParser
     }
 
     /** @param list<array{open:TagNode,children:list<Node>,branches:list<ElseBranchNode>,active:string,branch_index:?int}> $stack */
-    private function handleElse(array &$stack, TagNode $tag, string $name, ExpressionParser $exprParser): void
+    private function handleElse(array &$stack, TagNode $tag, string $name, ExpressionParser $exprParser, ParseOptions $options): void
     {
         if ($stack === []) {
             $this->diagnostics[] = new Diagnostic('PARSE003', sprintf('Unexpected {%s} without open block.', $name), Severity::Error, $tag->span, true);
