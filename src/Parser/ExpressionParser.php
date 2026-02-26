@@ -202,7 +202,7 @@ final class ExpressionParser
     private function parsePrefix(): ExpressionNode
     {
         $token = $this->current();
-        if ($token->type === 'operator' && in_array($token->value, ['!', '-', '+'], true)) {
+        if ($token->type === 'operator' && in_array($token->value, ['!', '-', '+', '...'], true)) {
             $operator = $this->consume();
             $right = $this->parseExpression(100);
 
@@ -288,7 +288,14 @@ final class ExpressionParser
                 $open = $this->consume();
                 $args = [];
                 while ($this->current()->type !== 'eof' && $this->current()->value !== ')') {
-                    $args[] = $this->parseExpression(0);
+                    $argStart = $this->current()->span->start;
+                    if ($this->current()->value === '...') {
+                        $spreadTok = $this->consume();
+                        $operand = $this->parseExpression(0);
+                        $args[] = new UnaryExpressionNode(new SourceSpan($spreadTok->span->start, $operand->span->end), '...', $operand);
+                    } else {
+                        $args[] = $this->parseExpression(0);
+                    }
                     if ($this->current()->value === ',') {
                         $this->consume();
                     }

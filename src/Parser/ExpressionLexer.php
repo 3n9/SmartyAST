@@ -30,7 +30,7 @@ final class ExpressionLexer
             $startColumn = $column;
 
             $threeChar = $offset + 2 < $length ? $source[$offset] . $source[$offset + 1] . $source[$offset + 2] : '';
-            $threeCharOps = ['===', '!=='];
+            $threeCharOps = ['===', '!==', '...'];
             if (in_array($threeChar, $threeCharOps, true)) {
                 $offset += 3;
                 $column += 3;
