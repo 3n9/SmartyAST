@@ -24,4 +24,9 @@ abstract class Node
      * @return array<string,mixed>
      */
     abstract public function toArray(): array;
+
+    public function toJson(int $flags = 0): string
+    {
+        return (string) json_encode($this->toArray(), $flags);
+    }
 }

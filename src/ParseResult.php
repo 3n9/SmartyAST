@@ -18,4 +18,19 @@ final class ParseResult
         public readonly array $tokens = [],
     ) {
     }
+
+    /** @return array<string,mixed> */
+    public function toArray(): array
+    {
+        return [
+            'ast' => $this->ast->toArray(),
+            'diagnostics' => array_map(static fn (Diagnostic $d) => $d->toArray(), $this->diagnostics),
+            'tokens' => $this->tokens,
+        ];
+    }
+
+    public function toJson(int $flags = 0): string
+    {
+        return (string) json_encode($this->toArray(), $flags);
+    }
 }
