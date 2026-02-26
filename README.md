@@ -44,6 +44,20 @@ $result = $parser->parseString('{$foo}');
 - `diagnostics` — `Diagnostic[]`
 - `tokens` — optional, when `collectTokens=true`
 
+`ParseResult` also exposes convenience serialisation:
+
+```php
+$result->toArray(); // ['ast' => [...], 'diagnostics' => [...], 'tokens' => [...]]
+$result->toJson(JSON_PRETTY_PRINT); // JSON string
+```
+
+Every `Node` likewise supports:
+
+```php
+$node->toArray();       // plain PHP array
+$node->toJson();        // JSON string (passes optional $flags to json_encode)
+```
+
 ## Parse Options
 
 ```php
@@ -56,6 +70,7 @@ $options = new ParseOptions(
     recoverErrors: true,
     collectTokens: false,
     commentParsers: [new PhpDocTemplateAnnotationParser()], // default; pass [] to disable
+    phpVersion: '8.1', // gates PHP 8+ named-argument syntax (e.g. func(name: $val))
 );
 ```
 
@@ -76,7 +91,7 @@ foreach ($result->diagnostics as $d) {
 ```
 
 Each diagnostic has:
-- `code` — unique error code (e.g. `PARSE001`, `EXPR003`)
+- `code` — unique error code (e.g. `PARSE001`, `EXPR001`)
 - `message` — human-readable description
 - `severity` — `Severity::Error`, `Severity::Warning`, or `Severity::Info`
 - `span` — source location
@@ -196,10 +211,14 @@ The parser handles Smarty/PHP-style expressions in tags and print statements:
 - **variable / property / array access**
   - `{$foo}`, `{$foo[4]}`, `{$foo.bar}`, `{$foo.$bar}`
   - `{$foo->bar()}`, `{$object->method1($x)->method2($y)}`
+  - static access: `{Cls::method()}`, `{Cls::$prop}`, `{Cls::CONST}`
 - **assignment**
   - `{$foo=$bar+2}`, `{$foo.bar=1}`, `{$foo[]=1}`
 - **arrays** (including multiline)
   - `[1, 2, 3]`, `['k' => 'v', 'b' => 'c']`
+- **spread operator** (`...`)
+  - in calls: `{func(...$args)}`
+  - in array literals: `[...$a, ...$b]`
 - **modifiers**
   - `{$foo|upper}`, `{$foo|truncate:80:'...'}`, chained: `{$foo|escape:'html'|nl2br}`
   - represented as `ModifierChainExpressionNode` wrapping the base expression and a list of `ModifierNode`s
@@ -207,6 +226,9 @@ The parser handles Smarty/PHP-style expressions in tags and print statements:
   - double-quoted: `"hello $name"`, `` `$foo` ``
   - embedded blocks: `"status is {if $ok}ok{/if}"`
   - single-quoted strings are **not** interpolated
+- **bitshift operators** — `>>` and `<<`
+- **PHP 8 named arguments** (when `phpVersion >= '8.0'`)
+  - `{func(name: $val, other: 42)}`; each argument becomes a `NamedArgumentExpressionNode` with `name: string` and `value: ExpressionNode`
 - **operators**
   - ternary: `a ? b : c`, elvis: `a ?: c`, null coalescing: `a ?? c`
   - symbolic: `&&`, `||`, `!==`, `===`, `!=`, `==`, `<`, `>`, `<=`, `>=`
@@ -215,6 +237,32 @@ The parser handles Smarty/PHP-style expressions in tags and print statements:
 - **Smarty predicates**
   - `is [not] div by`, `is [not] even [by]`, `is [not] odd [by]`, `is [not] in`
 
+## Whitespace Control
+
+Leading and trailing whitespace around a tag can be trimmed by placing `-` inside the delimiter:
+
+```smarty
+{- $foo -}     {* trims whitespace before and after *}
+{- include file='x.tpl'}   {* trims only leading whitespace *}
+{if $x -}content{- /if}    {* trim after open-tag and before close-tag *}
+```
+
+`TagNode` and `PrintNode` gain `trimLeft: bool` / `trimRight: bool`.
+`BlockTagNode` gains `closeTrimLeft: bool` / `closeTrimRight: bool` for the close tag.
+
+## Raw Content Blocks
+
+`{literal}…{/literal}` and `{php}…{/php}` are raw-content block tags — their inner content is captured as `TextNode` children without any template parsing. Useful for JavaScript snippets or legacy inline PHP.
+
+```smarty
+{literal}
+  var x = {a: 1};  {* braces not parsed *}
+{/literal}
+
+{php}
+  echo "hello";    {* inner content is raw text *}
+{/php}
+```
 ## Config Shorthand
 
 - `{#foo#}` — equivalent to `{$smarty.config.foo}`
