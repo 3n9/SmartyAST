@@ -16,6 +16,7 @@ final class ParseOptions
         public readonly bool $recoverErrors = true,
         public readonly bool $collectTokens = false,
         public readonly array $commentParsers = [new PhpDocTemplateAnnotationParser()],
+        public readonly string $phpVersion = '8.1',
     ) {
     }
 }
