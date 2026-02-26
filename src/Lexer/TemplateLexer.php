@@ -200,6 +200,11 @@ final class TemplateLexer
         }
 
         $first = $content[0];
-        return $first === '$' || $first === '"' || $first === "'" || $first === '`';
+        if ($first === '$' || $first === '"' || $first === "'" || $first === '`') {
+            return true;
+        }
+
+        // identifier( with no intervening space = function-call print, e.g. {count($arr)}
+        return preg_match('/^[A-Za-z_][A-Za-z0-9_]*\(/', $content) === 1;
     }
 }
