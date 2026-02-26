@@ -29,6 +29,15 @@ $diagnostics = $result->diagnostics; // Diagnostic[]
 - `SmartyAst\Parser\SmartyParser::parseString(string $source, ?ParseOptions $options = null): ParseResult`
 - `SmartyAst\Parser\SmartyParser::parseFile(string $path, ?ParseOptions $options = null): ParseResult`
 
+`SmartyAstParser` is a stateful facade over `SmartyParser` that accepts an optional custom parser instance — useful for dependency injection:
+
+```php
+use SmartyAst\SmartyAstParser;
+
+$parser = new SmartyAstParser(); // wraps a default SmartyParser internally
+$result = $parser->parseString('{$foo}');
+```
+
 `ParseResult`:
 
 - `ast` — `DocumentNode`
@@ -38,6 +47,7 @@ $diagnostics = $result->diagnostics; // Diagnostic[]
 ## Parse Options
 
 ```php
+use SmartyAst\Comments\PhpDocTemplateAnnotationParser;
 use SmartyAst\ParseOptions;
 
 $options = new ParseOptions(
@@ -45,7 +55,7 @@ $options = new ParseOptions(
     rightDelimiter: '}',
     recoverErrors: true,
     collectTokens: false,
-    commentParsers: [] // or custom parsers
+    commentParsers: [new PhpDocTemplateAnnotationParser()], // default; pass [] to disable
 );
 ```
 
@@ -68,7 +78,7 @@ foreach ($result->diagnostics as $d) {
 Each diagnostic has:
 - `code` — unique error code (e.g. `PARSE001`, `EXPR003`)
 - `message` — human-readable description
-- `severity` — `Severity::Error` or `Severity::Warning`
+- `severity` — `Severity::Error`, `Severity::Warning`, or `Severity::Info`
 - `span` — source location
 - `recoverable` — whether the parser produced a partial AST node
 
@@ -190,6 +200,9 @@ The parser handles Smarty/PHP-style expressions in tags and print statements:
   - `{$foo=$bar+2}`, `{$foo.bar=1}`, `{$foo[]=1}`
 - **arrays** (including multiline)
   - `[1, 2, 3]`, `['k' => 'v', 'b' => 'c']`
+- **modifiers**
+  - `{$foo|upper}`, `{$foo|truncate:80:'...'}`, chained: `{$foo|escape:'html'|nl2br}`
+  - represented as `ModifierChainExpressionNode` wrapping the base expression and a list of `ModifierNode`s
 - **string interpolation**
   - double-quoted: `"hello $name"`, `` `$foo` ``
   - embedded blocks: `"status is {if $ok}ok{/if}"`
@@ -198,7 +211,7 @@ The parser handles Smarty/PHP-style expressions in tags and print statements:
   - ternary: `a ? b : c`, elvis: `a ?: c`, null coalescing: `a ?? c`
   - symbolic: `&&`, `||`, `!==`, `===`, `!=`, `==`, `<`, `>`, `<=`, `>=`
   - word aliases: `and`, `or`, `eq`, `ne`/`neq`, `gt`, `lt`, `gte`/`ge`, `lte`/`le`, `mod`
-  - `matches` — lowered to `preg_match($pattern, $subject)`
+  - `matches` — `$subject matches $pattern` lowers to `preg_match($pattern, $subject)`; produces a `CallExpressionNode` (not a binary expression) with callee `preg_match` and arguments `[$pattern, $subject]`
 - **Smarty predicates**
   - `is [not] div by`, `is [not] even [by]`, `is [not] odd [by]`, `is [not] in`
 

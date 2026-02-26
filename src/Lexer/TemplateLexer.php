@@ -200,6 +200,6 @@ final class TemplateLexer
         }
 
         $first = $content[0];
-        return $first === '$' || $first === '"' || $first === "'";
+        return $first === '$' || $first === '"' || $first === "'" || $first === '`';
     }
 }

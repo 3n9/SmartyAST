@@ -37,7 +37,7 @@ The pipeline is: **source string → TemplateLexer → TemplateParser → (Expre
 
 - All classes use `declare(strict_types=1)` and are `final` unless designed for extension
 - Constructor property promotion with `readonly` is used throughout
-- Namespaces: `Dev\Smarty\` → `src/`, `Dev\Smarty\Tests\` → `tests/`
+- Namespaces: `SmartyAst\` → `src/`, `SmartyAst\Tests\` → `tests/`
 - Tests use `SmartyParser` directly, not the `SmartyAstParser` facade
 - Tests use PHPUnit 13 `#[DataProvider]` attribute syntax (not the older `@dataProvider` docblock)
 - Fixture `.tpl` files live in `tests/fixtures/valid/` and `tests/fixtures/invalid/`

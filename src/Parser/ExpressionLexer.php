@@ -50,7 +50,7 @@ final class ExpressionLexer
                 continue;
             }
 
-            if ($ch === '"' || $ch === "'") {
+            if ($ch === '"' || $ch === "'" || $ch === '`') {
                 $quote = $ch;
                 $offset++;
                 $column++;
