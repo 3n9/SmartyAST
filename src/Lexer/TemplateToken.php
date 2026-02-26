@@ -13,6 +13,8 @@ final class TemplateToken
         public readonly string $raw,
         public readonly string $content,
         public readonly SourceSpan $span,
+        public readonly bool $trimLeft = false,
+        public readonly bool $trimRight = false,
     ) {
     }
 
@@ -23,6 +25,8 @@ final class TemplateToken
             'type' => $this->type,
             'raw' => $this->raw,
             'content' => $this->content,
+            'trimLeft' => $this->trimLeft,
+            'trimRight' => $this->trimRight,
             'span' => [
                 'start' => [
                     'offset' => $this->span->start->offset,

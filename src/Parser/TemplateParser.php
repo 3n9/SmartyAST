@@ -66,7 +66,7 @@ final class TemplateParser
                 case 'print':
                     $expr = $exprParser->parse($token->content, $token->span);
                     $this->diagnostics = array_merge($this->diagnostics, $expr->diagnostics);
-                    $this->appendNode($stack, $rootChildren, new PrintNode($token->span, $expr->expression));
+                    $this->appendNode($stack, $rootChildren, new PrintNode($token->span, $expr->expression, $token->trimLeft, $token->trimRight));
                     break;
 
                 case 'tag':
@@ -118,12 +118,12 @@ final class TemplateParser
     {
         $content = trim($token->content);
         if ($content === '') {
-            return new TagNode($token->span, '', [], false, $token->raw);
+            return new TagNode($token->span, '', [], false, $token->raw, $token->trimLeft, $token->trimRight);
         }
 
         if (!preg_match('/^(?P<name>[A-Za-z_][A-Za-z0-9_:\\-]*)(?:\s+(?P<rest>.*))?$/s', $content, $match)) {
             $this->diagnostics[] = new Diagnostic('PARSE002', 'Invalid tag syntax.', Severity::Error, $token->span, true);
-            return new TagNode($token->span, $content, [], false, $token->raw);
+            return new TagNode($token->span, $content, [], false, $token->raw, $token->trimLeft, $token->trimRight);
         }
 
         $name = $match['name'];
@@ -143,7 +143,7 @@ final class TemplateParser
             }
         }
 
-        return new TagNode($token->span, $name, $arguments, $isShorthand, $token->raw);
+        return new TagNode($token->span, $name, $arguments, $isShorthand, $token->raw, $token->trimLeft, $token->trimRight);
     }
 
     /** @param list<array{open:TagNode,children:list<Node>,branches:list<ElseBranchNode>,active:string,branch_index:?int}> $stack */
@@ -212,7 +212,7 @@ final class TemplateParser
 
         $frame = array_pop($stack);
         $span = new SourceSpan($frame['open']->span->start, $token->span->end);
-        $block = new BlockTagNode($span, $frame['open'], $frame['children'], $frame['branches'], $token->span);
+        $block = new BlockTagNode($span, $frame['open'], $frame['children'], $frame['branches'], $token->span, $token->trimLeft, $token->trimRight);
         $this->appendNode($stack, $rootChildren, $block);
     }
 

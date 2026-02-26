@@ -13,6 +13,8 @@ final class TagNode extends Node implements TagLike
         public array $arguments,
         public bool $isShorthand,
         public string $raw,
+        public bool $trimLeft = false,
+        public bool $trimRight = false,
     ) {
         parent::__construct('Tag', $span);
     }
@@ -29,6 +31,8 @@ final class TagNode extends Node implements TagLike
             'span' => SpanArray::from($this->span),
             'name' => $this->name,
             'isShorthand' => $this->isShorthand,
+            'trimLeft' => $this->trimLeft,
+            'trimRight' => $this->trimRight,
             'raw' => $this->raw,
             'arguments' => array_map(static fn (TagArgumentNode $argument) => $argument->toArray(), $this->arguments),
         ];

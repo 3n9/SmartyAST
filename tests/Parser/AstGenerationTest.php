@@ -28,6 +28,8 @@ final class AstGenerationTest extends TestCase
                             'start' => ['offset' => 0, 'line' => 1, 'column' => 1],
                             'end' => ['offset' => 12, 'line' => 1, 'column' => 13],
                         ],
+                        'trimLeft' => false,
+                        'trimRight' => false,
                         'expression' => [
                             'kind' => 'ModifierChainExpression',
                             'span' => [

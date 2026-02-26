@@ -15,6 +15,8 @@ final class BlockTagNode extends Node implements TagLike
         public array $children,
         public array $elseBranches,
         public ?SourceSpan $closeSpan,
+        public bool $closeTrimLeft = false,
+        public bool $closeTrimRight = false,
     ) {
         parent::__construct('BlockTag', $span);
     }
@@ -38,6 +40,8 @@ final class BlockTagNode extends Node implements TagLike
             'children' => array_map(static fn (Node $node) => $node->toArray(), $this->children),
             'elseBranches' => array_map(static fn (ElseBranchNode $branch) => $branch->toArray(), $this->elseBranches),
             'closeSpan' => $this->closeSpan ? SpanArray::from($this->closeSpan) : null,
+            'closeTrimLeft' => $this->closeTrimLeft,
+            'closeTrimRight' => $this->closeTrimRight,
         ];
     }
 }
