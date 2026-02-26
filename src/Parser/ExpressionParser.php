@@ -279,7 +279,7 @@ final class ExpressionParser
             return $this->parseBracketArray($token->span->start);
         }
 
-        $this->diagnostics[] = new Diagnostic('EXPR003', 'Unexpected token in expression.', Severity::Error, $token->span, true);
+        $this->diagnostics[] = new Diagnostic('EXPR001', 'Unexpected token in expression.', Severity::Error, $token->span, true);
         $bad = $this->consume();
         return new ErrorExpressionNode($bad->span, 'Unexpected token');
     }
