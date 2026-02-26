@@ -244,18 +244,18 @@ final class TemplateParser
         }
 
         $top = $stack[array_key_last($stack)];
-        return strtolower($top['open']->name) === 'literal';
+        return in_array(strtolower($top['open']->name), ['literal', 'php'], true);
     }
 
     private function isLiteralClose(TemplateToken $token): bool
     {
-        return $token->type === 'close_tag' && strtolower(trim($token->content)) === 'literal';
+        return $token->type === 'close_tag' && in_array(strtolower(trim($token->content)), ['literal', 'php'], true);
     }
 
     private function isBlockTag(string $name): bool
     {
         return in_array($name, [
-            'if', 'foreach', 'for', 'while', 'section', 'capture', 'setfilter', 'block', 'function', 'strip', 'literal', 'nocache',
+            'if', 'foreach', 'for', 'while', 'section', 'capture', 'setfilter', 'block', 'function', 'strip', 'literal', 'nocache', 'php',
         ], true);
     }
 
