@@ -4,7 +4,7 @@
     "description": "Smarty template AST parser with diagnostics and position tracking",
     "license": "proprietary",
     "require": {
-        "php": "^8.2"
+        "php": "^8.4"
     },
     "require-dev": {
         "phpunit/phpunit": "^13"
