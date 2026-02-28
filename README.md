@@ -132,6 +132,69 @@ walk($result->ast);
 
 For expression-level traversal, `ExpressionNode` subclasses implement `childExpressions(): list<ExpressionNode>`.
 
+### NodeVisitor
+
+For structured depth-first traversal implement `SmartyAst\Visitor\NodeVisitorInterface` and call `Node::walk()`:
+
+```php
+use SmartyAst\Ast\Node;
+use SmartyAst\Ast\TagNode;
+use SmartyAst\Visitor\NodeVisitorInterface;
+
+final class TagCollector implements NodeVisitorInterface
+{
+    /** @var TagNode[] */
+    public array $tags = [];
+
+    public function enterNode(Node $node): void
+    {
+        if ($node instanceof TagNode) {
+            $this->tags[] = $node;
+        }
+    }
+
+    public function leaveNode(Node $node): void {}
+}
+
+$visitor = new TagCollector();
+$result->ast->walk($visitor);
+// $visitor->tags — all TagNodes in document order
+```
+
+`enterNode` is called before a node's children are visited; `leaveNode` is called after.
+
+## Utility Methods
+
+### `TagNode::findArgument(string $name): ?TagArgumentNode`
+
+Finds a named argument case-insensitively. When the tag uses shorthand syntax (`$isShorthand === true`) the first positional argument is returned as a fallback:
+
+```php
+// {include file='header.tpl'}  or  {include 'header.tpl'}
+$fileArg = $tag->findArgument('file');
+```
+
+### `LiteralExpressionNode` typed accessors
+
+Safely extract a typed value from a literal node (returns `null` when the literal is a different type):
+
+```php
+$node->asString();  // ?string  — only for string literals
+$node->asInt();     // ?int
+$node->asFloat();   // ?float
+$node->asBool();    // ?bool
+```
+
+### `ExpressionNode` helpers
+
+```php
+// All variable names (without $) referenced in an expression, including property paths
+$names = $expr->collectVariableNames(); // list<string>
+
+// Number of leaf operands in a binary-expression tree (parenthesised groups are unwrapped)
+$count = $expr->countBinaryOperands(); // int
+```
+
 ## Full Tags and Shorthand Tags
 
 The parser supports both named and positional arguments:
