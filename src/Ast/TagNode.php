@@ -29,6 +29,23 @@ final class TagNode extends Node implements TagLike
         return $this->arguments;
     }
 
+    /**
+     * Finds a named argument by name (case-insensitive), or—when the tag uses
+     * shorthand syntax—returns the first positional argument as a fallback.
+     */
+    public function findArgument(string $name): ?TagArgumentNode
+    {
+        foreach ($this->arguments as $index => $argument) {
+            if ($argument->name !== null && strtolower($argument->name) === strtolower($name)) {
+                return $argument;
+            }
+            if ($this->isShorthand && $index === 0) {
+                return $argument;
+            }
+        }
+        return null;
+    }
+
     public function toArray(): array
     {
         return [
