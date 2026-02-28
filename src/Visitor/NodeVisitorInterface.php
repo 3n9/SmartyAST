@@ -11,8 +11,6 @@ use SmartyAst\Ast\Node;
  *
  * Implement this interface and pass an instance to {@see Node::walk()} to
  * receive callbacks as each node is entered and exited during traversal.
- * Default no-op implementations are provided so implementors only need to
- * override the methods they care about.
  */
 interface NodeVisitorInterface
 {

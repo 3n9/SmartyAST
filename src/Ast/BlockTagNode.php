@@ -28,7 +28,7 @@ final class BlockTagNode extends Node implements TagLike
 
     public function children(): array
     {
-        return array_merge($this->children, $this->elseBranches);
+        return [$this->openTag, ...$this->children, ...$this->elseBranches];
     }
 
     public function toArray(): array

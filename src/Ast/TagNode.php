@@ -35,13 +35,15 @@ final class TagNode extends Node implements TagLike
      */
     public function findArgument(string $name): ?TagArgumentNode
     {
-        foreach ($this->arguments as $index => $argument) {
+        // First pass: find an explicitly named argument.
+        foreach ($this->arguments as $argument) {
             if ($argument->name !== null && strtolower($argument->name) === strtolower($name)) {
                 return $argument;
             }
-            if ($this->isShorthand && $index === 0) {
-                return $argument;
-            }
+        }
+        // Second pass: for shorthand tags fall back to the first positional argument.
+        if ($this->isShorthand && isset($this->arguments[0]) && $this->arguments[0]->name === null) {
+            return $this->arguments[0];
         }
         return null;
     }

@@ -120,6 +120,25 @@ final class NodeUtilsTest extends TestCase
         $this->assertNotNull($arg);
     }
 
+    public function testFindArgumentNamedArgTakesPriorityOverShorthand(): void
+    {
+        // Regression: for {include "a.tpl" assign=foo}, findArgument('assign') must
+        // return the *named* assign arg, not arg 0 (the positional file arg).
+        $result = $this->parser->parseString('{include "a.tpl" assign=foo}');
+        $tag    = $result->ast->children()[0];
+        $this->assertInstanceOf(TagNode::class, $tag);
+        $this->assertTrue($tag->isShorthand);
+
+        $assignArg = $tag->findArgument('assign');
+        $this->assertNotNull($assignArg);
+        $this->assertSame('assign', $assignArg->name);
+
+        // And the positional fallback still works for the file name.
+        $fileArg = $tag->findArgument('file');
+        $this->assertNotNull($fileArg);
+        $this->assertNull($fileArg->name, 'Expected the positional (null-name) arg for file');
+    }
+
     // -----------------------------------------------------------------------
     // ExpressionNode::collectVariableNames
     // -----------------------------------------------------------------------

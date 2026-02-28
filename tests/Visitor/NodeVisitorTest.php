@@ -87,8 +87,9 @@ final class NodeVisitorTest extends TestCase
 
         $result->ast->walk($visitor);
 
-        // $b lives in ElseBranchNode::condition and must be reached.
-        // ($a lives in BlockTagNode::openTag which is not traversed by children().)
+        // $a is in BlockTagNode::openTag (now included in children()) and
+        // $b is in ElseBranchNode::condition — both must be reached.
+        $this->assertContains('a', $names);
         $this->assertContains('b', $names);
     }
 

@@ -144,15 +144,28 @@ final class NodeChildrenTest extends TestCase
         $this->assertSame($chain->base, $chain->children()[0]);
     }
 
+    public function testBlockTagNodeChildrenIncludesOpenTag(): void
+    {
+        $result = $this->parser->parseString('{if $a}body{/if}');
+        $block  = $result->ast->children()[0];
+
+        $this->assertInstanceOf(BlockTagNode::class, $block);
+        $children = $block->children();
+        // First child must be the openTag (TagNode).
+        $this->assertInstanceOf(TagNode::class, $children[0]);
+        $this->assertSame($block->openTag, $children[0]);
+    }
+
     public function testFullTreeWalkReachesAllVariables(): void
     {
-        $result = $this->parser->parseString('{include file=$path}{$var|upper}');
+        $result = $this->parser->parseString('{include file=$path}{$var|upper}{if $cond}x{/if}');
 
         $varNames = [];
         $this->collectVarNamesRecursive($result->ast, $varNames);
 
         $this->assertContains('path', $varNames);
         $this->assertContains('var', $varNames);
+        $this->assertContains('cond', $varNames);  // inside {if} openTag
     }
 
     /** @param list<string> &$names */
