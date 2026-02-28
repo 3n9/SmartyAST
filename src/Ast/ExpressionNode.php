@@ -13,4 +13,12 @@ abstract class ExpressionNode extends Node
     {
         return [];
     }
+
+    /**
+     * @return list<Node>
+     */
+    public function children(): array
+    {
+        return $this->childExpressions();
+    }
 }

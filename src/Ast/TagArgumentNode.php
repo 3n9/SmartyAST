@@ -14,6 +14,11 @@ final class TagArgumentNode extends Node
         parent::__construct('TagArgument', $span);
     }
 
+    public function children(): array
+    {
+        return [$this->value];
+    }
+
     public function toArray(): array
     {
         return [

@@ -24,6 +24,11 @@ final class TagNode extends Node implements TagLike
         return $this;
     }
 
+    public function children(): array
+    {
+        return $this->arguments;
+    }
+
     public function toArray(): array
     {
         return [

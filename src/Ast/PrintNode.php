@@ -15,6 +15,11 @@ final class PrintNode extends Node
         parent::__construct('Print', $span);
     }
 
+    public function children(): array
+    {
+        return [$this->expression];
+    }
+
     public function toArray(): array
     {
         return [

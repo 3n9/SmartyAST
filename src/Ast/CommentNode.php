@@ -15,6 +15,11 @@ final class CommentNode extends Node
         parent::__construct('Comment', $span);
     }
 
+    public function children(): array
+    {
+        return $this->annotations;
+    }
+
     public function toArray(): array
     {
         return [

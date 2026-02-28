@@ -18,6 +18,9 @@ final class ElseBranchNode extends Node
 
     public function children(): array
     {
+        if ($this->condition !== null) {
+            return [$this->condition, ...$this->children];
+        }
         return $this->children;
     }
 
