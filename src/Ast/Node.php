@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace SmartyAst\Ast;
 
+use SmartyAst\Visitor\NodeVisitorInterface;
+
 abstract class Node
 {
     public function __construct(
@@ -18,6 +20,20 @@ abstract class Node
     public function children(): array
     {
         return [];
+    }
+
+    /**
+     * Walks this node and all its descendants depth-first, calling
+     * {@see NodeVisitorInterface::enterNode()} before children and
+     * {@see NodeVisitorInterface::leaveNode()} after.
+     */
+    public function walk(NodeVisitorInterface $visitor): void
+    {
+        $visitor->enterNode($this);
+        foreach ($this->children() as $child) {
+            $child->walk($visitor);
+        }
+        $visitor->leaveNode($this);
     }
 
     /**
