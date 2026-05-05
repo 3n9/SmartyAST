@@ -206,6 +206,30 @@ The parser supports both named and positional arguments:
 
 `TagNode::$isShorthand` is `true` when positional shorthand syntax is used.
 
+## Foreach Syntax
+
+Both the legacy named form and the Smarty 3+ shorthand are supported and produce identical AST argument shapes (`from`, `item`, and optionally `key`):
+
+```smarty
+{* Legacy named form *}
+{foreach from=$items item='row' key='idx'}…{/foreach}
+
+{* Smarty 3+ shorthand — item only *}
+{foreach $items as $row}…{/foreach}
+
+{* Smarty 3+ shorthand — key => value *}
+{foreach $items as $idx => $row}…{/foreach}
+```
+
+The source expression can be any expression:
+
+```smarty
+{foreach $rows['cols'] as $col}…{/foreach}
+{foreach $obj->rows() as $row}…{/foreach}
+```
+
+Trailing named arguments (e.g. `name='loop'`) are preserved after the `as`-clause. A missing variable after `as` or `=>` emits diagnostic `EXPR017`.
+
 ## Comment Annotation Plugins
 
 Comment parsing is pluggable via `CommentParserInterface`.
@@ -282,9 +306,14 @@ The parser handles Smarty/PHP-style expressions in tags and print statements:
 - **spread operator** (`...`)
   - in calls: `{func(...$args)}`
   - in array literals: `[...$a, ...$b]`
+- **foreach iteration properties**
+  - `{$item@first}`, `{$item@last}`, `{$item@index}`, `{$item@iteration}`, `{$item@total}`, `{$item@show}`, `{$item@key}`
+  - parsed as a postfix `@property` on any expression; produces `ForeachIterationPropertyNode` with `target` and `property`
+  - unknown property names emit diagnostic `EXPR016`
 - **modifiers**
   - `{$foo|upper}`, `{$foo|truncate:80:'...'}`, chained: `{$foo|escape:'html'|nl2br}`
   - represented as `ModifierChainExpressionNode` wrapping the base expression and a list of `ModifierNode`s
+  - Smarty 2 `@`-prefixed modifier syntax is accepted for back-compat: `{$arr|@count}`, `{$arr|@json_encode|escape:'html'}`
 - **string interpolation**
   - double-quoted: `"hello $name"`, `` `$foo` ``
   - embedded blocks: `"status is {if $ok}ok{/if}"`

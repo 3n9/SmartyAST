@@ -32,6 +32,7 @@ The pipeline is: **source string → TemplateLexer → TemplateParser → (Expre
 | `BlockTagNode` | paired tag like `{if}…{/if}`; has `openTag`, `children`, `elseBranches`, `closeSpan` |
 | `ElseBranchNode` | `{else}` / `{elseif …}` inside a block |
 | `CommentNode` | `{* … *}`; holds parsed `annotations` after comment plugins run |
+| `ForeachIterationPropertyNode` | postfix `$item@first` / `@last` / etc.; has `target: ExpressionNode` and `property: string` |
 
 ## Conventions
 
