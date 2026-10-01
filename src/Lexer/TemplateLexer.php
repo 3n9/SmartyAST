@@ -100,16 +100,18 @@ final class TemplateLexer
             }
             $content = trim($inner);
             $span = $this->spanFromRaw($offset, $line, $column, $raw);
+            $contentOffset = strlen($ld) + ($trimLeft ? 1 : 0) + strlen($inner) - strlen(ltrim($inner));
+            $contentSpan = $span->slice($raw, $contentOffset, strlen($content));
 
             if ($this->isConfigShorthand($content)) {
                 $name = substr($content, 1, -1);
-                $tokens[] = new TemplateToken('print', $raw, '$smarty.config.' . $name, $span, $trimLeft, $trimRight);
+                $tokens[] = new TemplateToken('config', $raw, $name, $span, $trimLeft, $trimRight, $contentSpan);
             } elseif ($this->isPrintExpression($content)) {
-                $tokens[] = new TemplateToken('print', $raw, $content, $span, $trimLeft, $trimRight);
+                $tokens[] = new TemplateToken('print', $raw, $content, $span, $trimLeft, $trimRight, $contentSpan);
             } elseif (str_starts_with($content, '/')) {
                 $tokens[] = new TemplateToken('close_tag', $raw, trim(substr($content, 1)), $span, $trimLeft, $trimRight);
             } else {
-                $tokens[] = new TemplateToken('tag', $raw, $content, $span, $trimLeft, $trimRight);
+                $tokens[] = new TemplateToken('tag', $raw, $content, $span, $trimLeft, $trimRight, $contentSpan);
             }
 
             [$line, $column] = $this->advance($raw, $line, $column);

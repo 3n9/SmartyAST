@@ -770,6 +770,7 @@ final class ExpressionParser
     {
         $parts = [];
         $literalBuffer = '';
+        $literalStart = 0;
         $length = strlen($body);
         $i = 0;
 
@@ -791,15 +792,16 @@ final class ExpressionParser
                     continue;
                 }
 
-                $this->flushLiteralPart($parts, $literalBuffer, $token->span);
+                $this->flushLiteralPart($parts, $literalBuffer, $token->span->slice($token->value, 1 + $literalStart, $i - $literalStart));
                 $embedded = substr($body, $i + 1, $end - $i - 1);
-                $expr = $this->parseEmbeddedExpression($embedded, $token->span);
+                $expr = $this->parseEmbeddedExpression($embedded, $token->span->slice($token->value, $i + 2, strlen($embedded)));
                 if ($expr !== null) {
                     $parts[] = $expr;
                 } else {
-                    $parts[] = new LiteralExpressionNode($token->span, 'string', '`' . $embedded . '`');
+                    $parts[] = new LiteralExpressionNode($token->span->slice($token->value, $i + 1, $end - $i + 1), 'string', '`' . $embedded . '`');
                 }
                 $i = $end + 1;
+                $literalStart = $i;
                 continue;
             }
 
@@ -812,29 +814,31 @@ final class ExpressionParser
                     continue;
                 }
 
-                $this->flushLiteralPart($parts, $literalBuffer, $token->span);
+                $this->flushLiteralPart($parts, $literalBuffer, $token->span->slice($token->value, 1 + $literalStart, $i - $literalStart));
                 $inner = substr($body, $i + 1, $end - $i - 1);
-                $expr = $this->parseEmbeddedSmartyChunk($inner, $token->span);
+                $expr = $this->parseEmbeddedSmartyChunk($inner, $token->span->slice($token->value, $i + 2, strlen($inner)));
                 if ($expr !== null) {
                     $parts[] = $expr;
                 } else {
-                    $parts[] = new LiteralExpressionNode($token->span, 'string', '{' . $inner . '}');
+                    $parts[] = new LiteralExpressionNode($token->span->slice($token->value, $i + 1, $end - $i + 1), 'string', '{' . $inner . '}');
                 }
                 $i = $end + 1;
+                $literalStart = $i;
                 continue;
             }
 
             // Simple variable interpolation: $foo, $foo_bar
             if ($char === '$' && $i + 1 < $length && preg_match('/[A-Za-z_]/', $body[$i + 1]) === 1) {
-                $this->flushLiteralPart($parts, $literalBuffer, $token->span);
+                $this->flushLiteralPart($parts, $literalBuffer, $token->span->slice($token->value, 1 + $literalStart, $i - $literalStart));
                 $j = $i + 1;
                 while ($j < $length && preg_match('/[A-Za-z0-9_]/', $body[$j]) === 1) {
                     $j++;
                 }
 
                 $name = substr($body, $i + 1, $j - $i - 1);
-                $parts[] = new VariableExpressionNode($token->span, $name);
+                $parts[] = new VariableExpressionNode($token->span->slice($token->value, $i + 1, $j - $i), $name);
                 $i = $j;
+                $literalStart = $i;
                 continue;
             }
 
@@ -842,7 +846,7 @@ final class ExpressionParser
             $i++;
         }
 
-        $this->flushLiteralPart($parts, $literalBuffer, $token->span);
+        $this->flushLiteralPart($parts, $literalBuffer, $token->span->slice($token->value, 1 + $literalStart, $i - $literalStart));
         if ($parts === []) {
             return new LiteralExpressionNode($token->span, 'string', '');
         }
@@ -876,12 +880,13 @@ final class ExpressionParser
     private function parseEmbeddedSmartyChunk(string $inner, SourceSpan $containerSpan): ?ExpressionNode
     {
         $trimmed = trim($inner);
+        $containerSpan = $containerSpan->slice($inner, strlen($inner) - strlen(ltrim($inner)), strlen($trimmed));
         if ($trimmed === '' || str_starts_with($trimmed, '/')) {
             return null;
         }
 
-        if (preg_match('/^(if|elseif|while)\s+(.+)$/i', $trimmed, $match) === 1) {
-            return $this->parseEmbeddedExpression($match[2], $containerSpan);
+        if (preg_match('/^(if|elseif|while)\s+(.+)$/i', $trimmed, $match, PREG_OFFSET_CAPTURE) === 1) {
+            return $this->parseEmbeddedExpression($match[2][0], $containerSpan->slice($trimmed, $match[2][1]));
         }
 
         return $this->parseEmbeddedExpression($trimmed, $containerSpan);
@@ -890,7 +895,7 @@ final class ExpressionParser
     private function parseEmbeddedExpression(string $source, SourceSpan $containerSpan): ?ExpressionNode
     {
         $probe = new self($this->lexer);
-        $result = $probe->parse($source, $containerSpan);
+        $result = $probe->parse($source, $containerSpan, $this->phpVersion);
 
         if ($result->expression instanceof ErrorExpressionNode) {
             return null;

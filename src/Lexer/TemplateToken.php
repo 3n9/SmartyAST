@@ -15,6 +15,7 @@ final class TemplateToken
         public readonly SourceSpan $span,
         public readonly bool $trimLeft = false,
         public readonly bool $trimRight = false,
+        public readonly ?SourceSpan $contentSpan = null,
     ) {
     }
 

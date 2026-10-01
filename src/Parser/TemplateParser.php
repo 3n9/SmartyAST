@@ -11,6 +11,8 @@ use SmartyAst\Ast\ElseBranchNode;
 use SmartyAst\Ast\ExpressionNode;
 use SmartyAst\Ast\Node;
 use SmartyAst\Ast\PrintNode;
+use SmartyAst\Ast\PropertyFetchExpressionNode;
+use SmartyAst\Ast\VariableExpressionNode;
 use SmartyAst\Ast\SourceSpan;
 use SmartyAst\Ast\TagArgumentNode;
 use SmartyAst\Ast\TagNode;
@@ -64,9 +66,20 @@ final class TemplateParser
                     break;
 
                 case 'print':
-                    $expr = $exprParser->parse($token->content, $token->span, $options->phpVersion);
+                    $expr = $exprParser->parse($token->content, $token->contentSpan ?? $token->span, $options->phpVersion);
                     $this->diagnostics = array_merge($this->diagnostics, $expr->diagnostics);
                     $this->appendNode($stack, $rootChildren, new PrintNode($token->span, $expr->expression, $token->trimLeft, $token->trimRight));
+                    break;
+
+                case 'config':
+                    // The expanded $smarty.config prefix is synthetic: keep its
+                    // span zero-width instead of inventing source characters.
+                    $span = $token->contentSpan ?? $token->span;
+                    $prefixSpan = new SourceSpan($span->start, $span->start);
+                    $base = new VariableExpressionNode($prefixSpan, 'smarty');
+                    $config = new PropertyFetchExpressionNode($prefixSpan, $base, 'config', '.');
+                    $expr = new PropertyFetchExpressionNode($span, $config, $token->content, '.');
+                    $this->appendNode($stack, $rootChildren, new PrintNode($token->span, $expr, $token->trimLeft, $token->trimRight));
                     break;
 
                 case 'tag':
@@ -128,14 +141,16 @@ final class TemplateParser
 
         $name = $match['name'];
         $rest = trim($match['rest'] ?? '');
+        $restOffset = strlen($name) + strlen(substr($content, strlen($name))) - strlen(ltrim(substr($content, strlen($name))));
+        $restSpan = ($token->contentSpan ?? $token->span)->slice($content, $restOffset, strlen($rest));
         $arguments = [];
         $isShorthand = false;
 
         if ($rest !== '') {
             if (strtolower($name) === 'foreach') {
-                [$rawArgs, $argDiagnostics] = $exprParser->parseForeachArguments($rest, $token->span, $options->phpVersion);
+                [$rawArgs, $argDiagnostics] = $exprParser->parseForeachArguments($rest, $restSpan, $options->phpVersion);
             } else {
-                [$rawArgs, $argDiagnostics] = $exprParser->parseArguments($rest, $token->span, $options->phpVersion);
+                [$rawArgs, $argDiagnostics] = $exprParser->parseArguments($rest, $restSpan, $options->phpVersion);
             }
             $this->diagnostics = array_merge($this->diagnostics, $argDiagnostics);
 

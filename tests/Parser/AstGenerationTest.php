@@ -33,14 +33,14 @@ final class AstGenerationTest extends TestCase
                         'expression' => [
                             'kind' => 'ModifierChainExpression',
                             'span' => [
-                                'start' => ['offset' => 0, 'line' => 1, 'column' => 1],
-                                'end' => ['offset' => 10, 'line' => 1, 'column' => 11],
+                                'start' => ['offset' => 1, 'line' => 1, 'column' => 2],
+                                'end' => ['offset' => 11, 'line' => 1, 'column' => 12],
                             ],
                             'base' => [
                                 'kind' => 'VariableExpression',
                                 'span' => [
-                                    'start' => ['offset' => 0, 'line' => 1, 'column' => 1],
-                                    'end' => ['offset' => 2, 'line' => 1, 'column' => 3],
+                                    'start' => ['offset' => 1, 'line' => 1, 'column' => 2],
+                                    'end' => ['offset' => 3, 'line' => 1, 'column' => 4],
                                 ],
                                 'name' => 'a',
                             ],
@@ -48,8 +48,8 @@ final class AstGenerationTest extends TestCase
                                 [
                                     'kind' => 'Modifier',
                                     'span' => [
-                                        'start' => ['offset' => 2, 'line' => 1, 'column' => 3],
-                                        'end' => ['offset' => 10, 'line' => 1, 'column' => 11],
+                                        'start' => ['offset' => 3, 'line' => 1, 'column' => 4],
+                                        'end' => ['offset' => 11, 'line' => 1, 'column' => 12],
                                     ],
                                     'name' => 'toUpper',
                                     'arguments' => [],
