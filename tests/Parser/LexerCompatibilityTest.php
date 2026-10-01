@@ -28,6 +28,7 @@ final class LexerCompatibilityTest extends TestCase
         yield ['literal', 'var x = "{";'];
         yield ['literal', '{* unterminated comment and "quote'];
         yield ['literal', '{/php} is plain text'];
+        yield ['literal', '{ /literal} var x = "{";'];
         yield ['php', 'echo "{";'];
     }
 

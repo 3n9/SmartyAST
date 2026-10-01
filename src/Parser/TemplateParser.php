@@ -114,7 +114,7 @@ final class TemplateParser
         while (($frame = array_pop($stack)) !== null) {
             /** @var TagNode $open */
             $open = $frame['open'];
-            $span = new SourceSpan($open->span->start, $this->nodeEnd($frame['children'], $open->span));
+            $span = new SourceSpan($open->span->start, end($tokens)->span->end);
             $this->diagnostics[] = new Diagnostic('PARSE001', sprintf('Unclosed block tag {%s}.', $open->name), Severity::Error, $open->span, true);
             $this->appendNode($stack, $rootChildren, new BlockTagNode($span, $open, $frame['children'], $frame['branches'], null));
         }
@@ -225,7 +225,7 @@ final class TemplateParser
         while (count($stack) - 1 > $matchIndex) {
             $unclosed = array_pop($stack);
             $this->diagnostics[] = new Diagnostic('PARSE008', sprintf('Auto-closing unclosed block {%s}.', $unclosed['open']->name), Severity::Warning, $unclosed['open']->span, true);
-            $span = new SourceSpan($unclosed['open']->span->start, $this->nodeEnd($unclosed['children'], $unclosed['open']->span));
+            $span = new SourceSpan($unclosed['open']->span->start, $token->span->start);
             $this->appendNode($stack, $rootChildren, new BlockTagNode($span, $unclosed['open'], $unclosed['children'], $unclosed['branches'], null));
         }
 

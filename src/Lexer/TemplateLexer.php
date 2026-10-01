@@ -71,6 +71,7 @@ final class TemplateLexer
                         $span,
                         true,
                     );
+                    [$line, $column] = $this->advance($raw, $line, $column);
                     break;
                 }
 
@@ -95,6 +96,7 @@ final class TemplateLexer
                     $span,
                     true,
                 );
+                [$line, $column] = $this->advance($raw, $line, $column);
                 break;
             }
 
@@ -129,7 +131,8 @@ final class TemplateLexer
 
             // Raw blocks must bypass lexing, not merely expression parsing.
             if (in_array(strtolower($content), ['literal', 'php'], true)) {
-                $pattern = '~' . preg_quote($ld, '~') . '-?\s*/' . strtolower($content) . '\s*-?' . preg_quote($rd, '~') . '~i';
+                $closePrefix = $this->options->autoLiteral ? '(?:-\s*)?/' : '-?\s*/';
+                $pattern = '~' . preg_quote($ld, '~') . $closePrefix . strtolower($content) . '\s*-?' . preg_quote($rd, '~') . '~i';
                 $found = preg_match($pattern, $source, $match, PREG_OFFSET_CAPTURE, $offset);
                 $rawEnd = $found === 1 ? $match[0][1] : $length;
                 $text = substr($source, $offset, $rawEnd - $offset);

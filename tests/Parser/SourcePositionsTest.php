@@ -13,6 +13,19 @@ use SmartyAst\Parser\SmartyParser;
 
 final class SourcePositionsTest extends TestCase
 {
+    public function testUnterminatedInputKeepsItsActualEndPosition(): void
+    {
+        foreach (["{*\nunfinished", "{\$value\n", "{if \$x}a{else}\nlast"] as $source) {
+            $result = (new SmartyParser())->parseString($source);
+            $end = $result->ast->span->end;
+            self::assertSame(strlen($source), $end->offset);
+            self::assertSame(1 + substr_count($source, "\n"), $end->line);
+            if ($result->ast->children[0] instanceof \SmartyAst\Ast\BlockTagNode) {
+                self::assertSame($end, $result->ast->children[0]->span->end);
+            }
+        }
+    }
+
     #[DataProvider('templates')]
     public function testVariablesSelectTheirExactSource(string $source, ?ParseOptions $options = null): void
     {
