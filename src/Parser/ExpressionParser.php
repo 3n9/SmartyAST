@@ -258,6 +258,9 @@ final class ExpressionParser
             }
 
             if ($this->current()->type === 'eof') {
+                if ($name !== null) {
+                    $this->diagnostics[] = new Diagnostic('EXPR018', 'Expected a value after =.', Severity::Error, $current->span, true);
+                }
                 break;
             }
 
@@ -453,7 +456,12 @@ final class ExpressionParser
                         $this->consume();
                     }
                 }
-                $close = $this->current()->value === ')' ? $this->consume() : $open;
+                if ($this->current()->value === ')') {
+                    $close = $this->consume();
+                } else {
+                    $close = $this->current();
+                    $this->diagnostics[] = new Diagnostic('EXPR019', 'Expected ) to close function call.', Severity::Error, $open->span, true);
+                }
                 $left = new CallExpressionNode(new SourceSpan($left->span->start, $close->span->end), $left, $args);
                 continue;
             }

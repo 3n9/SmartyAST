@@ -119,6 +119,7 @@ final class ExpressionLexer
 
             $offset++;
             $column++;
+            $tokens[] = new ExpressionToken('invalid', $ch, $this->span($baseOffset + $startOffset, $startLine, $startColumn, $baseOffset + $offset, $line, $column));
         }
 
         $pos = new Position($baseOffset + $offset, $line, $column);

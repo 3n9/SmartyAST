@@ -71,8 +71,17 @@ $options = new ParseOptions(
     collectTokens: false,
     commentParsers: [new PhpDocTemplateAnnotationParser()], // default; pass [] to disable
     phpVersion: '8.1', // gates PHP 8+ named-argument syntax (e.g. func(name: $val))
+    autoLiteral: true, // ignore opening delimiters immediately followed by whitespace
 );
 ```
+
+With `recoverErrors: false`, parsing throws `SmartyAst\ParseException` on an error
+instead of returning a recovered AST. Its `diagnostic` property carries the error
+code and source span. Delimiters must be non-empty strings.
+
+Source offsets and columns count bytes, with one-based lines and columns and an
+exclusive end position. Config shorthand uses zero-width spans for its synthetic
+`$smarty.config` prefix. Collected tokens identify shorthand with type `config`.
 
 ## Diagnostics
 

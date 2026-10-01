@@ -7,6 +7,8 @@ namespace SmartyAst\Parser;
 use SmartyAst\Lexer\TemplateLexer;
 use SmartyAst\ParseOptions;
 use SmartyAst\ParseResult;
+use SmartyAst\ParseException;
+use SmartyAst\Diagnostics\Severity;
 
 final class SmartyParser
 {
@@ -16,9 +18,11 @@ final class SmartyParser
 
         $lexer = new TemplateLexer($options);
         $lexResult = $lexer->tokenize($source);
+        $this->checkRecovery($lexResult->diagnostics, $options);
 
         $templateParser = new TemplateParser();
         [$ast, $parserDiagnostics] = $templateParser->parse($lexResult->tokens, $options);
+        $this->checkRecovery($parserDiagnostics, $options);
 
         $tokens = [];
         if ($options->collectTokens) {
@@ -40,5 +44,17 @@ final class SmartyParser
         }
 
         return $this->parseString($content, $options);
+    }
+
+    /** @param list<\SmartyAst\Diagnostics\Diagnostic> $diagnostics */
+    private function checkRecovery(array $diagnostics, ParseOptions $options): void
+    {
+        if (!$options->recoverErrors) {
+            foreach ($diagnostics as $diagnostic) {
+                if ($diagnostic->severity === Severity::Error) {
+                    throw new ParseException($diagnostic);
+                }
+            }
+        }
     }
 }
