@@ -17,6 +17,10 @@ final class ParseOptions
         public readonly bool $collectTokens = false,
         public readonly array $commentParsers = [new PhpDocTemplateAnnotationParser()],
         public readonly string $phpVersion = '8.1',
+        public readonly bool $autoLiteral = true,
     ) {
+        if ($leftDelimiter === '' || $rightDelimiter === '') {
+            throw new \InvalidArgumentException('Template delimiters must not be empty.');
+        }
     }
 }

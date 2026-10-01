@@ -48,12 +48,22 @@ final class TemplateLexer
                 $offset = $tagStart;
             }
 
-            if (substr($source, $offset, 2) === $ld . '*') {
-                $endPos = strpos($source, '*' . $rd, $offset + 2);
+            if ($this->options->autoLiteral && isset($source[$offset + strlen($ld)]) && ctype_space($source[$offset + strlen($ld)])) {
+                $span = $this->spanFromRaw($offset, $line, $column, $ld);
+                $tokens[] = new TemplateToken('text', $ld, $ld, $span);
+                [$line, $column] = $this->advance($ld, $line, $column);
+                $offset += strlen($ld);
+                continue;
+            }
+
+            $commentOpenLength = strlen($ld) + 1;
+            $commentCloseLength = strlen($rd) + 1;
+            if (substr($source, $offset, $commentOpenLength) === $ld . '*') {
+                $endPos = strpos($source, '*' . $rd, $offset + $commentOpenLength);
                 if ($endPos === false) {
                     $raw = substr($source, $offset);
                     $span = $this->spanFromRaw($offset, $line, $column, $raw);
-                    $tokens[] = new TemplateToken('comment', $raw, substr($raw, 2), $span);
+                    $tokens[] = new TemplateToken('comment', $raw, substr($raw, $commentOpenLength), $span);
                     $diagnostics[] = new Diagnostic(
                         'LEX001',
                         'Unterminated Smarty comment.',
@@ -64,12 +74,12 @@ final class TemplateLexer
                     break;
                 }
 
-                $raw = substr($source, $offset, $endPos + 2 - $offset);
-                $content = substr($raw, 2, -2);
+                $raw = substr($source, $offset, $endPos + $commentCloseLength - $offset);
+                $content = substr($raw, $commentOpenLength, -$commentCloseLength);
                 $span = $this->spanFromRaw($offset, $line, $column, $raw);
                 $tokens[] = new TemplateToken('comment', $raw, $content, $span);
                 [$line, $column] = $this->advance($raw, $line, $column);
-                $offset = $endPos + 2;
+                $offset = $endPos + $commentCloseLength;
                 continue;
             }
 
@@ -116,6 +126,19 @@ final class TemplateLexer
 
             [$line, $column] = $this->advance($raw, $line, $column);
             $offset = $endPos + strlen($rd);
+
+            // Raw blocks must bypass lexing, not merely expression parsing.
+            if (in_array(strtolower($content), ['literal', 'php'], true)) {
+                $pattern = '~' . preg_quote($ld, '~') . '-?\s*/' . strtolower($content) . '\s*-?' . preg_quote($rd, '~') . '~i';
+                $found = preg_match($pattern, $source, $match, PREG_OFFSET_CAPTURE, $offset);
+                $rawEnd = $found === 1 ? $match[0][1] : $length;
+                $text = substr($source, $offset, $rawEnd - $offset);
+                if ($text !== '') {
+                    $tokens[] = new TemplateToken('text', $text, $text, $this->spanFromRaw($offset, $line, $column, $text));
+                    [$line, $column] = $this->advance($text, $line, $column);
+                }
+                $offset = $rawEnd;
+            }
         }
 
         $eof = new SourceSpan(
@@ -216,6 +239,6 @@ final class TemplateLexer
         }
 
         // identifier( with no intervening space = function-call print, e.g. {count($arr)}
-        return preg_match('/^[A-Za-z_][A-Za-z0-9_]*\(/', $content) === 1;
+        return preg_match('/^[A-Za-z_][A-Za-z0-9_]*(?:\(|::)/', $content) === 1;
     }
 }

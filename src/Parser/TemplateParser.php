@@ -116,7 +116,7 @@ final class TemplateParser
             $open = $frame['open'];
             $span = new SourceSpan($open->span->start, $this->nodeEnd($frame['children'], $open->span));
             $this->diagnostics[] = new Diagnostic('PARSE001', sprintf('Unclosed block tag {%s}.', $open->name), Severity::Error, $open->span, true);
-            $rootChildren[] = new BlockTagNode($span, $open, $frame['children'], $frame['branches'], null);
+            $this->appendNode($stack, $rootChildren, new BlockTagNode($span, $open, $frame['children'], $frame['branches'], null));
         }
 
         $span = $tokens !== [] ? new SourceSpan($tokens[0]->span->start, end($tokens)->span->end) : new SourceSpan(
