@@ -276,10 +276,10 @@ final class ExpressionParser
         return $args;
     }
 
-    private function parseExpression(int $minPrecedence): ExpressionNode
+    private function parseExpression(int $minPrecedence, bool $allowModifiers = true): ExpressionNode
     {
-        $left = $this->parsePrefix();
-        $left = $this->parsePostfix($left);
+        $left = $this->parsePrefix($allowModifiers);
+        $left = $this->parsePostfix($left, $allowModifiers);
 
         while (true) {
             $token = $this->current();
@@ -339,19 +339,19 @@ final class ExpressionParser
         return $left;
     }
 
-    private function parsePrefix(): ExpressionNode
+    private function parsePrefix(bool $allowModifiers = true): ExpressionNode
     {
         $token = $this->current();
         if ($token->type === 'operator' && in_array($token->value, ['!', '-', '+', '...'], true)) {
             $operator = $this->consume();
-            $right = $this->parseExpression(100);
+            $right = $this->parseExpression(100, $allowModifiers);
 
             return new UnaryExpressionNode(new SourceSpan($operator->span->start, $right->span->end), $operator->value, $right);
         }
 
         if ($token->type === 'identifier' && strtolower($token->value) === 'not') {
             $operator = $this->consume();
-            $right = $this->parseExpression(100);
+            $right = $this->parseExpression(100, $allowModifiers);
 
             return new UnaryExpressionNode(new SourceSpan($operator->span->start, $right->span->end), 'not', $right);
         }
@@ -420,7 +420,7 @@ final class ExpressionParser
         return new ErrorExpressionNode($bad->span, 'Unexpected token');
     }
 
-    private function parsePostfix(ExpressionNode $left): ExpressionNode
+    private function parsePostfix(ExpressionNode $left, bool $allowModifiers = true): ExpressionNode
     {
         while (true) {
             $token = $this->current();
@@ -522,7 +522,7 @@ final class ExpressionParser
                 continue;
             }
 
-            if ($token->value === '|') {
+            if ($token->value === '|' && $allowModifiers) {
                 $left = $this->parseModifiers($left);
                 continue;
             }
@@ -592,7 +592,9 @@ final class ExpressionParser
             $arguments = [];
             while ($this->current()->value === ':') {
                 $this->consume();
-                $arguments[] = $this->parseExpression(80);
+                // An ungrouped pipe starts the next modifier in this chain.
+                // Parenthesized arguments may still contain their own chains.
+                $arguments[] = $this->parseExpression(80, false);
             }
 
             $modifiers[] = new ModifierNode(new SourceSpan($pipe->span->start, ($arguments !== [] ? end($arguments)->span : $name->span)->end), $name->value, $arguments);
